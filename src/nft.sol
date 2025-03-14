@@ -6,7 +6,6 @@ import {Strings} from "../lib/openzeppelin-contracts/contracts/utils/Strings.sol
 import {Ownable} from "../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
 
 contract VoteResult is ERC721, Ownable {
-
     using Strings for uint256;
 
     struct Result {
@@ -32,20 +31,26 @@ contract VoteResult is ERC721, Ownable {
         return _tokenInfo[tokenId];
     }
 
-    function resultToString(Result memory result) internal pure returns(string memory) {
-        return string(abi.encodePacked(
-            "id: ", result.id.toString(), " ",
-            result.description, " yes count: ", result.yesCount.toString(),
-            " no count: ", result.noCount.toString()
-        ));
+    function resultToString(Result memory result) internal pure returns (string memory) {
+        return string(
+            abi.encodePacked(
+                "id: ",
+                result.id.toString(),
+                " ",
+                result.description,
+                " yes count: ",
+                result.yesCount.toString(),
+                " no count: ",
+                result.noCount.toString()
+            )
+        );
     }
 
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         _requireOwned(tokenId);
         Result memory results = _tokenInfo[tokenId];
-        string memory json = string(abi.encodePacked(
-            '{Vote Result #', tokenId.toString(), ', info: ', resultToString(results),' }'
-        ));
+        string memory json =
+            string(abi.encodePacked("{Vote Result #", tokenId.toString(), ", info: ", resultToString(results), " }"));
         return string(abi.encodePacked("data:json;base64,", Base64.encode(bytes(json))));
     }
 }

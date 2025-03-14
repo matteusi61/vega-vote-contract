@@ -8,32 +8,30 @@ import {VoteResult} from "../src/nft.sol";
 import {IERC721Receiver} from "../lib/openzeppelin-contracts/contracts/token/ERC721/IERC721Receiver.sol";
 
 contract VotingTest is Test, IERC721Receiver {
-
     VegaVoteToken token;
     Stake stake;
     VoteResult nft;
     Voting voting;
-    
-    address owner; 
+
+    address owner;
     address admin = address(0x1);
     address user1 = address(0x2);
     address user2 = address(0x3);
     address user666 = address(0x666);
 
-    function onERC721Received(
-        address operator,
-        address from,
-        uint256 tokenId,
-        bytes calldata data
-    ) external pure returns (bytes4) {
+    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data)
+        external
+        pure
+        returns (bytes4)
+    {
         return this.onERC721Received.selector;
     }
 
     function setUp() public {
-        owner = address(this); 
+        owner = address(this);
         token = new VegaVoteToken();
         stake = new Stake(address(token));
-        nft = new VoteResult(address(this)); 
+        nft = new VoteResult(address(this));
         voting = new Voting(address(stake), admin, address(nft));
 
         token.transfer(user1, 1000 ether);
@@ -59,7 +57,7 @@ contract VotingTest is Test, IERC721Receiver {
     function testCreateSession() public {
         vm.prank(admin);
         voting.createVote("Test Vote 1", 1 days, 90);
- 
+
         (uint256 id, string memory desc,, uint256 threshold,,,,) = voting.votes(0);
         assertEq(id, 0);
         assertEq(threshold, 90);
@@ -71,8 +69,7 @@ contract VotingTest is Test, IERC721Receiver {
 
         vm.prank(user2);
         vm.expectRevert();
-        voting.createVote("Test Vote 3", 1 days, 70);        
-
+        voting.createVote("Test Vote 3", 1 days, 70);
     }
 
     function testVote() public {
@@ -95,7 +92,7 @@ contract VotingTest is Test, IERC721Receiver {
 
     function testAutoFinalization() public {
         vm.prank(admin);
-        voting.createVote("Test Vote", 1 days, 90); 
+        voting.createVote("Test Vote", 1 days, 90);
         vm.prank(user1);
         voting.vote(0, true);
         vm.prank(user2);
@@ -113,7 +110,7 @@ contract VotingTest is Test, IERC721Receiver {
 
         vm.prank(admin);
         voting.finalVotes();
-        (,,,,,,bool isFinalized,) = voting.votes(0);
+        (,,,,,, bool isFinalized,) = voting.votes(0);
         assertTrue(isFinalized);
     }
 
@@ -128,7 +125,7 @@ contract VotingTest is Test, IERC721Receiver {
         token.approve(address(stake), 5000 ether);
         stake.stake(5000 ether, 666 days);
         vm.stopPrank();
-        assertEq(token.balanceOf(user666), 0 ether); 
+        assertEq(token.balanceOf(user666), 0 ether);
 
         vm.warp(block.timestamp + 400 days);
 

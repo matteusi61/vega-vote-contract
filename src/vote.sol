@@ -8,7 +8,6 @@ import {IERC721Receiver} from "../lib/openzeppelin-contracts/contracts/token/ERC
 import {Ownable} from "../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
 
 contract Voting is AccessControl, IERC721Receiver, Ownable {
-
     struct Vote {
         uint256 id;
         string description;
@@ -35,25 +34,21 @@ contract Voting is AccessControl, IERC721Receiver, Ownable {
         address contractAddress;
         uint256 tokenId;
     }
+
     ReceivedNFT[] public receivedNFTs;
 
-
-    constructor(address _staking, address _admin, address _nft) Ownable(msg.sender){
+    constructor(address _staking, address _admin, address _nft) Ownable(msg.sender) {
         _grantRole(ADMIN, _admin);
         staking = Stake(_staking);
         nft = VoteResult(_nft);
     }
 
-    function onERC721Received(
-        address operator,
-        address from,
-        uint256 tokenId,
-        bytes calldata data
-    ) external override returns (bytes4) {
-        receivedNFTs.push(ReceivedNFT({
-            contractAddress: msg.sender,
-            tokenId: tokenId
-        }));
+    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data)
+        external
+        override
+        returns (bytes4)
+    {
+        receivedNFTs.push(ReceivedNFT({contractAddress: msg.sender, tokenId: tokenId}));
 
         return this.onERC721Received.selector;
     }
@@ -75,17 +70,19 @@ contract Voting is AccessControl, IERC721Receiver, Ownable {
 
     function createVote(string memory description, uint256 duration, uint256 threshold) external onlyRole(ADMIN) {
         address[] memory participants = new address[](0);
-        votes.push(Vote({
-            id: nextVoteId,
-            description: description,
-            deadline: block.timestamp + duration,
-            threshold: threshold,
-            yesCount: 0,
-            noCount: 0,
-            isOver: false,
-            participants: participants,
-            sumPower: _stackPower()
-        }));
+        votes.push(
+            Vote({
+                id: nextVoteId,
+                description: description,
+                deadline: block.timestamp + duration,
+                threshold: threshold,
+                yesCount: 0,
+                noCount: 0,
+                isOver: false,
+                participants: participants,
+                sumPower: _stackPower()
+            })
+        );
         emit VoteCreated(nextVoteId, description);
         nextVoteId++;
     }
