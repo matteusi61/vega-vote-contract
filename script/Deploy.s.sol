@@ -9,10 +9,11 @@ contract DeployScript is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         address deployerAddress = vm.addr(deployerPrivateKey);
+        address erc20 = vm.envAddress("ERC20_ADDRESS");
 
         vm.startBroadcast(deployerPrivateKey);
 
-        Stake stake = new Stake(address(0x0)); // адрес токена
+        Stake stake = new Stake(erc20);
         VoteResult nft = new VoteResult(deployerAddress);
         Voting voting = new Voting(address(stake), deployerAddress, address(nft));
 

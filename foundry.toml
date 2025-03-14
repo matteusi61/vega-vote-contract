@@ -4,9 +4,9 @@ out = "out"
 libs = ["lib"]
 
 [rpc_endpoints]
-sepolia = "${https://sepolia.infura.io/v3/eebc3e9cf33043e88d8d9b3be1852af6}"
+sepolia = "https://sepolia.infura.io/v3/57e0de43c7d345949d88f0a8385b49a6"
 
 [etherscan]
-sepolia = { key = "${FZ23MI7VYQNTRWJ9Z6E7SZ9RUY12TSXTZU}" }
+sepolia = { key = "FZ23MI7VYQNTRWJ9Z6E7SZ9RUY12TSXTZU" }
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
